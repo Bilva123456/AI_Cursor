@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Gesture Control System{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .navbar {
+        display: none;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .auth-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        max-width: 1000px;
+        width: 100%;
+        min-height: 600px;
+    }
+
+    /* ===== LEFT SECTION ===== */
+    .auth-left {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .brand {
+        margin-bottom: 50px;
+    }
+
+    .brand-icon {
+        font-size: 70px;
+        margin-bottom: 20px;
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .brand h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+        color: #FFD700;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+
+    .features {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        animation: slideIn 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    .feature-item:nth-child(1) { animation-delay: 0.1s; }
+    .feature-item:nth-child(2) { animation-delay: 0.2s; }
+    .feature-item:nth-child(3) { animation-delay: 0.3s; }
+    .feature-item:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        font-size: 16px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    /* ===== RIGHT SECTION ===== */
+    .auth-right {
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-container {
+        width: 100%;
+    }
+
+    .form-container h2 {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .form-container > p {
+        font-size: 15px;
+        color: #999;
+        margin-bottom: 30px;
+        font-weight: 500;
+    }
+
+    .auth-form {
+        display: none;
+    }
+
+    .auth-form.active-form {
+        display: block;
+        animation: fadeIn 0.4s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2a2a3e;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e8;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #f9f9fc;
+        font-family: inherit;
+    }
+
+    .form-group input:hover {
+        border-color: #d0d8ff;
+        background: #ffffff;
+    }
+
+    .form-group input:focus {
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        outline: none;
+    }
+
+    .form-group input::placeholder {
+        color: #c0c0d0;
+        font-weight: 500;
+    }
+
+    .password-field {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-field input {
+        flex: 1;
+        padding-right: 45px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.2s ease;
+        padding: 5px;
+    }
+
+    .toggle-password:hover {
+        color: #667eea;
+    }
+
+    .input-error {
+        display: none;
+        font-size: 12px;
+        color: #ef4444;
+        margin-top: 4px;
+    }
+
+    .input-error.show {
+        display: block;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        font-size: 13px;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .remember-me input {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #667eea;
+    }
+
+    .forgot-password {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .forgot-password:hover {
+        color: #764ba2;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        margin-bottom: 15px;
+    }
+
+    .btn-submit:hover {
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.45);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .error-message {
+        padding: 12px;
+        background: #ffebee;
+        color: #c62828;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 15px;
+        border-left: 4px solid #c62828;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .toggle-section {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-top: 20px;
+    }
+
+    .toggle-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .toggle-link:hover {
+        color: #764ba2;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-overlay.hidden {
+        display: none;
+    }
+
+    .spinner-large {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.3);
+        border-top: 5px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-overlay p {
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .auth-container {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+
+        .auth-left {
+            padding: 40px 30px;
+            display: none;
+        }
+
+        .auth-right {
+            padding: 40px 30px;
+        }
+
+        .brand h1 {
+            font-size: 28px;
+        }
+
+        .form-container h2 {
+            font-size: 24px;
+        }
+
+        .features {
+            gap: 15px;
+        }
+
+        .form-options {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <!-- Left Section - Branding -->
+    <div class="auth-left">
+        <div class="brand">
+            <div class="brand-icon">👋</div>
+            <h1>Gesture Control</h1>
+            <p>Advanced Hand Gesture Recognition System</p>
+        </div>
+        <div class="features">
+            <div class="feature-item">
+                <span class="feature-icon">✓</span>
+                <span>Real-time Detection</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">✓</span>
+                <span>AI Powered Analysis</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">✓</span>
+                <span>High Accuracy</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">✓</span>
+                <span>Fast Processing</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Section - Form -->
+    <div class="auth-right">
+        <div class="form-container">
+            <h2 id="form-title">Welcome Back</h2>
+            <p id="form-subtitle">Sign in to your account to continue</p>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active-form" method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" required placeholder="Enter your username">
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="login-password" name="password" required placeholder="Enter your password">
+                        <button type="button" class="toggle-password" onclick="toggleLoginPassword()">👁</button>
+                    </div>
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign In</button>
+
+                <div id="loginError" class="error-message"></div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" method="POST" action="{{ url_for('register') }}">
+                <div class="form-group">
+                    <label for="reg-fullname">Full Name</label>
+                    <input type="text" id="reg-fullname" name="full_name" placeholder="Enter your full name">
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" name="username" required placeholder="Choose a username">
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" name="email" required placeholder="Enter your email">
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="reg-password" name="password" required placeholder="Create a password">
+                        <button type="button" class="toggle-password" onclick="toggleRegisterPassword()">👁</button>
+                    </div>
+                    <span class="input-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-confirm">Confirm Password</label>
+                    <div class="password-field">
+                        <input type="password" id="reg-confirm" name="confirm_password" required placeholder="Confirm your password">
+                        <button type="button" class="toggle-password" onclick="toggleConfirmPassword()">👁</button>
+                    </div>
+                    <span class="input-error"></span>
+                </div>
+
+                <button type="submit" class="btn-submit">Create Account</button>
+
+                <div id="registerError" class="error-message"></div>
+            </form>
+
+            <!-- Toggle Section -->
+            <div class="toggle-section">
+                <p id="toggle-text">Don't have an account? <a href="#" class="toggle-link" onclick="toggleForms(event)">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner-large"></div>
+    <p>Processing...</p>
+</div>
+
+<script>
+    // Toggle between login and register forms
+    function toggleForms(e) {
+        e.preventDefault();
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+        const toggleText = document.getElementById('toggle-text');
+
+        if (loginForm.classList.contains('active-form')) {
+            loginForm.classList.remove('active-form');
+            registerForm.classList.add('active-form');
+            formTitle.textContent = 'Create Account';
+            formSubtitle.textContent = 'Sign up to get started';
+            toggleText.innerHTML = 'Already have an account? <a href="#" class="toggle-link" onclick="toggleForms(event)">Sign in</a>';
+        } else {
+            registerForm.classList.remove('active-form');
+            loginForm.classList.add('active-form');
+            formTitle.textContent = 'Welcome Back';
+            formSubtitle.textContent = 'Sign in to your account to continue';
+            toggleText.innerHTML = 'Don\'t have an account? <a href="#" class="toggle-link" onclick="toggleForms(event)">Sign up</a>';
+        }
+    }
+
+    // Toggle password visibility
+    function toggleLoginPassword() {
+        const input = document.getElementById('login-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleRegisterPassword() {
+        const input = document.getElementById('reg-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleConfirmPassword() {
+        const input = document.getElementById('reg-confirm');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    // Show/hide loading overlay
+    function showLoading() {
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+
+    // Prevent form submission and let Flask handle it
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Allow default form submission to Flask
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        // Allow default form submission to Flask
+    });
+</script>
+{% endblock %}

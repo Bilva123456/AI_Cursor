@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Gesture Control System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-circle"></i> User Profile
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-circle" style="font-size: 80px; color: #667eea;"></i>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Full Name</h6>
+                        <p class="h5">{{ user.full_name or 'Not provided' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Username</h6>
+                        <p class="h5">{{ user.username }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Email Address</h6>
+                        <p class="h5">{{ user.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Account Status</h6>
+                        <p>
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Member Since</h6>
+                        <p class="h5">{{ user.created_at.strftime('%B %d, %Y') if user.created_at else '—' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Last Login</h6>
+                        <p class="h5">
+                            {% if user.last_login %}
+                            {{ user.last_login.strftime('%B %d, %Y at %I:%M %p') }}
+                            {% else %}
+                            This is your first login
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6 class="mb-3">Gesture Settings</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block">Default Effect</small>
+                        <span class="badge bg-info">{{ settings.default_effect|upper }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block">Shape Detection</small>
+                        <span class="badge {% if settings.enable_shape_detection %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if settings.enable_shape_detection %}Enabled{% else %}Disabled{% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block">Gesture Recording</small>
+                        <span class="badge {% if settings.enable_gesture_recording %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if settings.enable_gesture_recording %}Enabled{% else %}Disabled{% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block">Gesture Sensitivity</small>
+                        <span class="badge bg-warning">{{ "%.1f"|format(settings.gesture_sensitivity) }}x</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Tip:</strong> Update your settings in the <a href="{{ url_for('settings') }}">Settings</a> page.
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('settings') }}" class="btn btn-primary">
+                        <i class="bi bi-gear"></i> Edit Settings
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

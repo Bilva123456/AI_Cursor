@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}About - Gesture Control System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="text-center mb-5">
+            <i class="bi bi-hand-index" style="font-size: 64px; color: #667eea;"></i>
+            <h1 class="mt-4">Gesture Control System</h1>
+            <p class="lead text-muted">Control Your Computer With Hand Gestures</p>
+        </div>
+
+        <!-- Overview -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-info-circle"></i> What is Gesture Control?
+                </h4>
+                <p>
+                    Gesture Control System is an advanced hand gesture recognition application that allows you to 
+                    control your computer using natural hand movements. Powered by MediaPipe and OpenCV, it provides 
+                    real-time gesture detection with amazing visual effects and customizable commands.
+                </p>
+            </div>
+        </div>
+
+        <!-- Key Features -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-stars"></i> Key Features
+                </h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-primary">
+                            <i class="bi bi-lightning-fill"></i> 5 Visual Effects
+                        </h6>
+                        <ul class="small mb-0">
+                            <li>🌈 Rainbow Cursor</li>
+                            <li>✨ Particle Trail with Gravity</li>
+                            <li>💎 Hologram Effect</li>
+                            <li>🧲 Magnetic Field</li>
+                            <li>🎨 Motion Trail</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-primary">
+                            <i class="bi bi-gear"></i> Advanced Features
+                        </h6>
+                        <ul class="small mb-0">
+                            <li>🔷 Shape Detection (Circle, Line, Polygon)</li>
+                            <li>🎙️ Gesture Recording</li>
+                            <li>🤖 AI-Powered Commands</li>
+                            <li>⚡ Real-time Speed Analysis</li>
+                            <li>💀 Hand Skeleton Visualization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-diagram-3"></i> How It Works
+                </h4>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-number">1</div>
+                        <div class="timeline-content">
+                            <h6>Webcam Detection</h6>
+                            <p class="small text-muted mb-0">Captures your hand position in real-time using your webcam</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">2</div>
+                        <div class="timeline-content">
+                            <h6>Hand Recognition</h6>
+                            <p class="small text-muted mb-0">Uses MediaPipe to detect all 21 hand landmarks with 99% accuracy</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">3</div>
+                        <div class="timeline-content">
+                            <h6>Gesture Analysis</h6>
+                            <p class="small text-muted mb-0">Analyzes hand pose and movement patterns to recognize gestures</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">4</div>
+                        <div class="timeline-content">
+                            <h6>Command Execution</h6>
+                            <p class="small text-muted mb-0">Converts recognized gestures into computer commands</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gesture Commands -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-hand-thumbs-up"></i> Gesture Commands
+                </h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-primary">Mouse Control</h6>
+                        <ul class="small mb-0">
+                            <li><strong>Index + Thumb:</strong> Left Click</li>
+                            <li><strong>Middle + Thumb:</strong> Scroll</li>
+                            <li><strong>Ring + Thumb:</strong> Right Click</li>
+                            <li><strong>Hand Position:</strong> Move Cursor</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-primary">Keyboard Shortcuts</h6>
+                        <ul class="small mb-0">
+                            <li><strong>1-5:</strong> Visual Effects</li>
+                            <li><strong>6:</strong> Normal Mode</li>
+                            <li><strong>S:</strong> Shape Detection</li>
+                            <li><strong>R:</strong> Record Gesture</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-terminal"></i> Technology Stack
+                </h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6><i class="bi bi-python"></i> Backend</h6>
+                        <ul class="small mb-0">
+                            <li>Python 3.10+</li>
+                            <li>Flask Web Framework</li>
+                            <li>SQLAlchemy ORM</li>
+                            <li>SQLite Database</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6><i class="bi bi-camera-video"></i> Computer Vision</h6>
+                        <ul class="small mb-0">
+                            <li>MediaPipe (Hand Detection)</li>
+                            <li>OpenCV (Video Processing)</li>
+                            <li>NumPy (Numerical Computing)</li>
+                            <li>PyAutoGUI (System Control)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-list-check"></i> System Requirements
+                </h4>
+                <ul>
+                    <li><strong>Operating System:</strong> Windows 10/11, macOS, or Linux</li>
+                    <li><strong>Python Version:</strong> 3.8 or higher</li>
+                    <li><strong>Webcam:</strong> Any USB or integrated webcam</li>
+                    <li><strong>RAM:</strong> Minimum 4GB (8GB recommended)</li>
+                    <li><strong>Processor:</strong> Intel Core i5 or better</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="card mb-4 border-0 shadow-sm bg-light">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-play-circle"></i> Getting Started
+                </h4>
+                <ol>
+                    <li>Create an account (if not already registered)</li>
+                    <li>Log in to your dashboard</li>
+                    <li>Configure your preferred gesture settings</li>
+                    <li>Launch the gesture control application</li>
+                    <li>Start using hand gestures to control your computer!</li>
+                </ol>
+                {% if 'user_id' in session %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-person-plus"></i> Create Account
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="bi bi-question-circle"></i> Frequently Asked Questions
+                </h4>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Do I need any special hardware?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                No! You only need a regular webcam. Most laptops and computers have built-in webcams, 
+                                but you can also use any USB webcam.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How accurate is the gesture detection?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Our system achieves 95%+ accuracy using Google's MediaPipe technology. 
+                                Accuracy improves with proper lighting and clear hand visibility.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can I customize the gestures?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! You can record your own custom gestures and map them to specific commands. 
+                                The system learns and adapts to your unique gesture style.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Is my data private and secure?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! All your data is stored locally on your computer. We do not send any video 
+                                or gesture data to external servers. Your privacy is our priority.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center py-4 border-top">
+            <p class="text-muted">
+                <strong>Gesture Control System v1.0</strong><br>
+                Built with <i class="bi bi-heart-fill text-danger"></i> using Python, Flask, and MediaPipe<br>
+                <small>&copy; 2025 All Rights Reserved</small>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 20px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #667eea;
+}
+
+.timeline-number {
+    position: absolute;
+    left: -28px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+</style>
+{% endblock %}

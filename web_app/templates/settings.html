@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Gesture Control System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i> Gesture Control Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <!-- Visual Effects -->
+                    <h5 class="mb-3">
+                        <i class="bi bi-sparkles"></i> Visual Effects
+                    </h5>
+                    <div class="mb-3">
+                        <label for="defaultEffect" class="form-label">Default Effect Mode</label>
+                        <select class="form-select" id="defaultEffect" name="default_effect">
+                            <option value="normal" {% if settings.default_effect == 'normal' %}selected{% endif %}>
+                                ⚪ Normal (No Effect)
+                            </option>
+                            <option value="rainbow" {% if settings.default_effect == 'rainbow' %}selected{% endif %}>
+                                🌈 Rainbow Cursor
+                            </option>
+                            <option value="particle" {% if settings.default_effect == 'particle' %}selected{% endif %}>
+                                ✨ Particle Trail
+                            </option>
+                            <option value="hologram" {% if settings.default_effect == 'hologram' %}selected{% endif %}>
+                                💎 Hologram
+                            </option>
+                            <option value="magnetic" {% if settings.default_effect == 'magnetic' %}selected{% endif %}>
+                                🧲 Magnetic Field
+                            </option>
+                            <option value="trail" {% if settings.default_effect == 'trail' %}selected{% endif %}>
+                                🎨 Motion Trail
+                            </option>
+                        </select>
+                        <small class="text-muted">Choose your preferred visual effect</small>
+                    </div>
+
+                    <hr>
+
+                    <!-- Advanced Features -->
+                    <h5 class="mb-3">
+                        <i class="bi bi-lightning-fill"></i> Advanced Features
+                    </h5>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="shapeDetection" name="enable_shape_detection" {% if settings.enable_shape_detection %}checked{% endif %}>
+                            <label class="form-check-label" for="shapeDetection">
+                                <strong>Enable Shape Detection</strong>
+                                <br>
+                                <small class="text-muted">Recognize circles, lines, and polygons when you draw them</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="gestureRecording" name="enable_gesture_recording" {% if settings.enable_gesture_recording %}checked{% endif %}>
+                            <label class="form-check-label" for="gestureRecording">
+                                <strong>Enable Gesture Recording</strong>
+                                <br>
+                                <small class="text-muted">Record custom gestures for personalized commands</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Gesture Sensitivity -->
+                    <h5 class="mb-3">
+                        <i class="bi bi-speedometer"></i> Gesture Sensitivity
+                    </h5>
+                    <div class="mb-3">
+                        <label for="sensitivity" class="form-label">
+                            Gesture Detection Sensitivity
+                            <span class="badge bg-primary">{{ "%.1f"|format(settings.gesture_sensitivity) }}x</span>
+                        </label>
+                        <input type="range" class="form-range" id="sensitivity" name="gesture_sensitivity" 
+                               min="0.5" max="2.0" step="0.1" value="{{ settings.gesture_sensitivity }}">
+                        <small class="text-muted">
+                            <strong>0.5x:</strong> Less sensitive (slower detection)
+                            <strong class="ms-3">1.0x:</strong> Default (balanced)
+                            <strong class="ms-3">2.0x:</strong> More sensitive (faster detection)
+                        </small>
+                    </div>
+
+                    <hr>
+
+                    <!-- Theme -->
+                    <h5 class="mb-3">
+                        <i class="bi bi-palette"></i> Theme
+                    </h5>
+                    <div class="mb-3">
+                        <label for="theme" class="form-label">Display Theme</label>
+                        <select class="form-select" id="theme" name="theme">
+                            <option value="light" {% if settings.theme == 'light' %}selected{% endif %}>
+                                ☀️ Light Mode
+                            </option>
+                            <option value="dark" {% if settings.theme == 'dark' %}selected{% endif %}>
+                                🌙 Dark Mode
+                            </option>
+                        </select>
+                        <small class="text-muted">Choose your preferred interface theme</small>
+                    </div>
+
+                    <hr>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Settings
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settings Info Card -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-info-circle"></i> Settings Information
+                </h5>
+                <p class="mb-2">
+                    <strong>Visual Effects:</strong> These settings control what visual effect is applied to your cursor 
+                    when using the gesture control application.
+                </p>
+                <p class="mb-2">
+                    <strong>Shape Detection:</strong> When enabled, the app will attempt to recognize geometric shapes 
+                    you draw with your hand.
+                </p>
+                <p class="mb-2">
+                    <strong>Gesture Recording:</strong> When enabled, you can record custom hand gestures and assign 
+                    them to specific computer commands.
+                </p>
+                <p class="mb-0">
+                    <strong>Sensitivity:</strong> Adjust how quickly the app responds to your hand movements. 
+                    Higher values make the system more responsive but may cause false detections.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+input[type='range'] {
+    height: 8px;
+    border-radius: 5px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}

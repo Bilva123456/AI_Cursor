@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Control Cursor - Real-Time Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0B0E14;
+            --bg-card: rgba(20, 27, 47, 0.6);
+            --bg-card-hover: rgba(30, 40, 70, 0.8);
+            --color-teal: #00F5D4;
+            --color-teal-dark: #00D9B8;
+            --color-violet: #9B5DE5;
+            --color-violet-bright: #BB86FC;
+            --color-gray: #E0E0E0;
+            --color-gray-dim: #8A8A8A;
+            --shadow-sm: 0 2px 8px rgba(0, 245, 212, 0.08);
+            --shadow-md: 0 8px 24px rgba(0, 245, 212, 0.12);
+            --shadow-lg: 0 20px 40px rgba(155, 93, 229, 0.15);
+            --glow-teal: 0 0 20px rgba(0, 245, 212, 0.3);
+            --glow-violet: 0 0 20px rgba(155, 93, 229, 0.25);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            color: var(--color-gray);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
+            letter-spacing: -0.3px;
+        }
+
+        /* Background Animated Mesh */
+        .background-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 245, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 30%, rgba(155, 93, 229, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(0, 245, 212, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .background-mesh.hand-detected {
+            animation: meshPulse 0.6s ease-out;
+        }
+
+        @keyframes meshPulse {
+            0% {
+                background: 
+                    radial-gradient(circle at 20% 50%, rgba(0, 245, 212, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 30%, rgba(155, 93, 229, 0.08) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 80%, rgba(0, 245, 212, 0.05) 0%, transparent 50%);
+            }
+            100% {
+                background: 
+                    radial-gradient(circle at 20% 50%, rgba(0, 245, 212, 0.05) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 30%, rgba(155, 93, 229, 0.05) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 80%, rgba(0, 245, 212, 0.03) 0%, transparent 50%);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            overflow: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-teal);
+            box-shadow: var(--glow-teal);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.inactive {
+            background: var(--color-gray-dim);
+            box-shadow: none;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            background: var(--bg-card);
+            color: var(--color-teal);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .icon-button:hover {
+            border-color: var(--color-teal);
+            background: var(--bg-card-hover);
+            box-shadow: var(--glow-teal);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Gesture Feedback Area */
+        .gesture-feedback {
+            grid-column: 1 / -1;
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 245, 212, 0.15);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .gesture-feedback.hand-detected {
+            border-color: rgba(0, 245, 212, 0.4);
+            background: rgba(20, 27, 47, 0.8);
+            box-shadow: var(--shadow-lg), var(--glow-teal);
+        }
+
+        .gesture-feedback::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(0, 245, 212, 0.1), transparent 40%),
+                        radial-gradient(circle at 70% 70%, rgba(155, 93, 229, 0.08), transparent 45%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .gesture-feedback.hand-detected::before {
+            opacity: 1;
+            animation: meshFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes meshFlow {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-gray);
+        }
+
+        .gesture-label {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .gesture-label.animate {
+            animation: labelPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes labelPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-metric {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 245, 212, 0.1);
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-metric:hover {
+            border-color: rgba(0, 245, 212, 0.3);
+            background: rgba(0, 245, 212, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-teal);
+            margin-bottom: 0.3rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--color-gray-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Left Panel */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Gesture Commands */
+        .gestures-section {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 245, 212, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--color-gray);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--color-teal);
+            box-shadow: var(--glow-teal);
+        }
+
+        .gesture-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 245, 212, 0.1);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gesture-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 212, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .gesture-card:hover {
+            border-color: rgba(0, 245, 212, 0.3);
+            background: rgba(0, 245, 212, 0.08);
+            transform: translateX(4px);
+            box-shadow: var(--glow-teal);
+        }
+
+        .gesture-card:hover::before {
+            left: 100%;
+        }
+
+        .gesture-name {
+            font-weight: 600;
+            color: var(--color-teal);
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .gesture-status {
+            font-size: 0.8rem;
+            color: var(--color-gray-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.7rem;
+            background: rgba(0, 245, 212, 0.1);
+            border: 1px solid rgba(0, 245, 212, 0.3);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            color: var(--color-teal);
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--bg-card);
+            border: 1px solid rgba(155, 93, 229, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(155, 93, 229, 0.1);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .stat-name {
+            color: var(--color-gray-dim);
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background: var(--bg-card);
+            border: 1px solid rgba(155, 93, 229, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-item {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-gray-dim);
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0, 245, 212, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+            cursor: pointer;
+            box-shadow: var(--glow-teal);
+            transition: all 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            width: 22px;
+            height: 22px;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+            cursor: pointer;
+            box-shadow: var(--glow-teal);
+            border: none;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 245, 212, 0.2);
+            transition: 0.3s;
+            border-radius: 34px;
+            border: 1px solid rgba(0, 245, 212, 0.3);
+        }
+
+        .switch-slider:before {
+            position: absolute;
+            content: '';
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 2px;
+            background-color: var(--bg-dark);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .switch-slider {
+            background-color: rgba(0, 245, 212, 0.4);
+            box-shadow: var(--glow-teal);
+        }
+
+        input:checked + .switch-slider:before {
+            transform: translateX(22px);
+            background: linear-gradient(135deg, var(--color-teal), var(--color-violet));
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            color: var(--color-gray-dim);
+        }
+
+        /* Effects Preview */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .effect-button {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 245, 212, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem;
+            color: var(--color-gray-dim);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .effect-button:hover {
+            border-color: var(--color-violet);
+            background: rgba(155, 93, 229, 0.1);
+            color: var(--color-violet-bright);
+            transform: translateY(-2px);
+        }
+
+        .effect-button.active {
+            background: rgba(0, 245, 212, 0.2);
+            border-color: var(--color-teal);
+            color: var(--color-teal);
+            box-shadow: var(--glow-teal);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 245, 212, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 245, 212, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gesture-feedback {
+                grid-column: 1;
+            }
+
+            .left-panel, .right-panel {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .feedback-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gesture-label {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Glow Animation */
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 245, 212, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(0, 245, 212, 0.8); }
+        }
+
+        .gesture-label.glowing {
+            animation: glow 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Mesh -->
+    <div class="background-mesh" id="backgroundMesh"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="app-title">
+                    <i class="bi bi-hand-index"></i>
+                    Gesture Control Cursor
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="icon-button" title="Settings">
+                    <i class="bi bi-gear"></i>
+                </button>
+                <button class="icon-button" title="Help">
+                    <i class="bi bi-question-circle"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Gesture Feedback Area -->
+        <div class="gesture-feedback" id="gestureFeedback">
+            <div class="feedback-header">
+                <span class="feedback-title">Real-Time Gesture Detection</span>
+                <span style="font-size: 0.85rem; color: var(--color-gray-dim);" id="fps">FPS: 0</span>
+            </div>
+            <div class="gesture-label" id="gestureLabel">
+                👐 Awaiting Input
+            </div>
+            <div class="feedback-grid">
+                <div class="feedback-metric">
+                    <div class="metric-value" id="handConfidence">0%</div>
+                    <div class="metric-label">Hand Confidence</div>
+                </div>
+                <div class="feedback-metric">
+                    <div class="metric-value" id="landmarks">0</div>
+                    <div class="metric-label">Landmarks Detected</div>
+                </div>
+                <div class="feedback-metric">
+                    <div class="metric-value" id="handDistance">0.0</div>
+                    <div class="metric-label">Hand Distance</div>
+                </div>
+                <div class="feedback-metric">
+                    <div class="metric-value" id="gestureAccuracy">0%</div>
+                    <div class="metric-label">Gesture Accuracy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Panel -->
+            <div class="left-panel">
+                <div class="gestures-section">
+                    <h3 class="section-title">Active Gestures</h3>
+                    
+                    <div class="gesture-card" data-gesture="point">
+                        <div class="gesture-name">👆 Point Gesture</div>
+                        <div class="gesture-status">
+                            <span>Single finger pointing</span>
+                            <span class="status-badge">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="gesture-card" data-gesture="grab">
+                        <div class="gesture-name">✊ Grab Gesture</div>
+                        <div class="gesture-status">
+                            <span>Closed fist detection</span>
+                            <span class="status-badge">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="gesture-card" data-gesture="peace">
+                        <div class="gesture-name">✌️ Peace Gesture</div>
+                        <div class="gesture-status">
+                            <span>Two fingers spread</span>
+                            <span class="status-badge">Standby</span>
+                        </div>
+                    </div>
+
+                    <div class="gesture-card" data-gesture="palm">
+                        <div class="gesture-name">🤚 Palm Gesture</div>
+                        <div class="gesture-status">
+                            <span>Open palm detection</span>
+                            <span class="status-badge">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="gesture-card" data-gesture="thumbs">
+                        <div class="gesture-name">👍 Thumbs Up</div>
+                        <div class="gesture-status">
+                            <span>Thumb extension up</span>
+                            <span class="status-badge">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <!-- Stats Section -->
+                <div class="stats-section">
+                    <h3 class="section-title">Statistics</h3>
+                    
+                    <div class="stat-item">
+                        <span class="stat-name">Gestures Detected</span>
+                        <span class="stat-value" id="statGestures">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-name">Current FPS</span>
+                        <span class="stat-value" id="statFps">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-name">Uptime</span>
+                        <span class="stat-value" id="statUptime">0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-name">Active Sessions</span>
+                        <span class="stat-value" id="statSessions">1</span>
+                    </div>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="controls-section">
+                    <h3 class="section-title">Controls</h3>
+
+                    <div class="control-item">
+                        <label class="control-label">Gesture Sensitivity</label>
+                        <input type="range" min="0" max="100" value="75" class="slider" id="sensitivitySlider">
+                    </div>
+
+                    <div class="control-item">
+                        <label class="control-label">Cursor Speed</label>
+                        <input type="range" min="0" max="100" value="60" class="slider" id="speedSlider">
+                    </div>
+
+                    <div class="control-item">
+                        <label class="control-label">Visual Effects</label>
+                        <div class="effects-grid">
+                            <button class="effect-button active" data-effect="rainbow">
+                                🌈 Rainbow
+                            </button>
+                            <button class="effect-button" data-effect="glow">
+                                ✨ Glow
+                            </button>
+                            <button class="effect-button" data-effect="trail">
+                                💫 Trail
+                            </button>
+                            <button class="effect-button" data-effect="particle">
+                                ⚛️ Particle
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-item">
+                        <label class="control-label">Settings</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked id="soundToggle">
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="toggle-label">Sound Feedback</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item">
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked id="recordToggle">
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="toggle-label">Recording Mode</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated data and interactions
+        const gestures = ['Point', 'Grab', 'Peace', 'Palm', 'Thumbs Up'];
+        const gestureEmojis = ['👆', '✊', '✌️', '🤚', '👍'];
+        let detectedGesturesCount = 0;
+        let startTime = Date.now();
+        let frameCount = 0;
+        let lastTime = Date.now();
+
+        // Elements
+        const gestureFeedback = document.getElementById('gestureFeedback');
+        const backgroundMesh = document.getElementById('backgroundMesh');
+        const gestureLabel = document.getElementById('gestureLabel');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const handConfidence = document.getElementById('handConfidence');
+        const landmarks = document.getElementById('landmarks');
+        const handDistance = document.getElementById('handDistance');
+        const gestureAccuracy = document.getElementById('gestureAccuracy');
+        const fpsDisplay = document.getElementById('fps');
+        const statGestures = document.getElementById('statGestures');
+        const statFps = document.getElementById('statFps');
+        const statUptime = document.getElementById('statUptime');
+
+        // Simulate hand detection
+        function simulateGestureDetection() {
+            if (Math.random() < 0.05) {
+                const index = Math.floor(Math.random() * gestures.length);
+                const gesture = gestures[index];
+                const emoji = gestureEmojis[index];
+
+                // Update feedback area
+                gestureFeedback.classList.add('hand-detected');
+                backgroundMesh.classList.add('hand-detected');
+                gestureLabel.textContent = `${emoji} ${gesture}`;
+                gestureLabel.classList.add('glowing');
+                gestureLabel.classList.add('animate');
+                statusText.textContent = `Detected: ${gesture}`;
+                statusDot.classList.remove('inactive');
+
+                // Update metrics
+                handConfidence.textContent = (80 + Math.random() * 20).toFixed(0) + '%';
+                landmarks.textContent = Math.floor(15 + Math.random() * 6);
+                handDistance.textContent = (Math.random() * 1.5).toFixed(2) + 'm';
+                gestureAccuracy.textContent = (85 + Math.random() * 15).toFixed(0) + '%';
+
+                detectedGesturesCount++;
+                statGestures.textContent = detectedGesturesCount;
+
+                setTimeout(() => {
+                    gestureFeedback.classList.remove('hand-detected');
+                    backgroundMesh.classList.remove('hand-detected');
+                    gestureLabel.textContent = '👐 Awaiting Input';
+                    gestureLabel.classList.remove('glowing');
+                    statusText.textContent = 'Ready';
+                    statusDot.classList.add('inactive');
+                    
+                    handConfidence.textContent = '0%';
+                    landmarks.textContent = '0';
+                    handDistance.textContent = '0.0';
+                    gestureAccuracy.textContent = '0%';
+                }, 1500);
+            }
+        }
+
+        // Update FPS and stats
+        function updateStats() {
+            const now = Date.now();
+            const deltaTime = now - lastTime;
+            frameCount++;
+
+            if (deltaTime >= 1000) {
+                const fps = Math.round(frameCount * 1000 / deltaTime);
+                fpsDisplay.textContent = `FPS: ${fps}`;
+                statFps.textContent = fps;
+                frameCount = 0;
+                lastTime = now;
+            }
+
+            const uptime = Math.floor((now - startTime) / 1000);
+            statUptime.textContent = uptime + 's';
+        }
+
+        // Gesture card interactions
+        document.querySelectorAll('.gesture-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const gestureName = this.querySelector('.gesture-name').textContent;
+                gestureLabel.textContent = gestureName;
+                gestureLabel.classList.add('animate');
+                setTimeout(() => {
+                    gestureLabel.classList.remove('animate');
+                }, 400);
+            });
+        });
+
+        // Effect button interactions
+        document.querySelectorAll('.effect-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.effect-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Control sliders
+        document.getElementById('sensitivitySlider').addEventListener('input', function(e) {
+            console.log('Sensitivity:', e.target.value);
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', function(e) {
+            console.log('Speed:', e.target.value);
+        });
+
+        // Main animation loop
+        function animate() {
+            simulateGestureDetection();
+            updateStats();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Icon button interactions
+        document.querySelectorAll('.icon-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 10);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gesture Control System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Welcome, {{ user.full_name or user.username }}! 👋</h1>
+        <p class="lead text-muted">Control your computer with gesture recognition</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <button class="btn btn-primary" id="launchAppBtn" data-bs-toggle="modal" data-bs-target="#launchModal">
+            <i class="bi bi-play-circle"></i> Launch Gesture App
+        </button>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-0 bg-light">
+            <div class="card-body">
+                <i class="bi bi-hand-index" style="font-size: 32px; color: #667eea;"></i>
+                <h5 class="card-title mt-3">Gestures Recorded</h5>
+                <p class="card-text display-6">{{ gestures|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-0 bg-light">
+            <div class="card-body">
+                <i class="bi bi-gear" style="font-size: 32px; color: #764ba2;"></i>
+                <h5 class="card-title mt-3">Active Effects</h5>
+                <p class="card-text display-6">5</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-0 bg-light">
+            <div class="card-body">
+                <i class="bi bi-lightning-fill" style="font-size: 32px; color: #f093fb;"></i>
+                <h5 class="card-title mt-3">Default Effect</h5>
+                <p class="card-text" style="font-weight: bold;">{{ settings.default_effect|upper }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-0 bg-light">
+            <div class="card-body">
+                <i class="bi bi-calendar3" style="font-size: 32px; color: #4facfe;"></i>
+                <h5 class="card-title mt-3">Joined</h5>
+                <p class="card-text small">{{ user.created_at.strftime('%b %d, %Y') if user.created_at else 'Today' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="mb-3">Quick Actions</h3>
+        <div class="btn-group-vertical w-100" role="group">
+            <a href="{{ url_for('settings') }}" class="btn btn-outline-primary text-start">
+                <i class="bi bi-gear"></i> Configure Settings
+                <small class="d-block text-muted">Adjust gesture sensitivity and effects</small>
+            </a>
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary text-start">
+                <i class="bi bi-person"></i> View Profile
+                <small class="d-block text-muted">Update your account information</small>
+            </a>
+            <button class="btn btn-outline-primary text-start" data-bs-toggle="modal" data-bs-target="#recordGestureModal">
+                <i class="bi bi-record-circle"></i> Record New Gesture
+                <small class="d-block text-muted">Create a custom gesture command</small>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Gestures Table -->
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="mb-3">Your Recorded Gestures</h3>
+        {% if gestures %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Gesture Name</th>
+                        <th>Description</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for gesture in gestures %}
+                    <tr>
+                        <td>
+                            <i class="bi bi-hand-index"></i> {{ gesture.gesture_name }}
+                        </td>
+                        <td>{{ gesture.description or '—' }}</td>
+                        <td>{{ gesture.created_at.strftime('%b %d, %Y') if gesture.created_at else '—' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteGesture({{ gesture.id }})">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No gestures recorded yet. 
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#recordGestureModal">
+                Record your first gesture
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Launch App Modal -->
+<div class="modal fade" id="launchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-play-circle"></i> Launch Gesture Control App
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>The gesture control application will start on your desktop.</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Note:</strong> Make sure your webcam is connected and functioning properly.
+                </div>
+                <p><strong>Features:</strong></p>
+                <ul>
+                    <li>✨ 5 Visual Effects (1-5 keys)</li>
+                    <li>🔷 Shape Detection (S key)</li>
+                    <li>🎙️ Gesture Recording (R key)</li>
+                    <li>🤖 AI Mode (A key)</li>
+                    <li>⚡ Real-time gesture tracking</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="launchGestureApp()">
+                    <i class="bi bi-play-fill"></i> Launch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Record Gesture Modal -->
+<div class="modal fade" id="recordGestureModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-record-circle"></i> Record New Gesture
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="recordGestureForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="gestureName" class="form-label">Gesture Name</label>
+                        <input type="text" class="form-control" id="gestureName" name="gesture_name" placeholder="e.g., Open Browser" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gestureDesc" class="form-label">Description</label>
+                        <textarea class="form-control" id="gestureDesc" name="description" rows="3" placeholder="What does this gesture do?"></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Instructions:</strong>
+                        <ol class="mb-0">
+                            <li>Click "Start Recording"</li>
+                            <li>Perform the gesture in front of your webcam</li>
+                            <li>Click "Stop Recording"</li>
+                            <li>Save the gesture</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="startGestureRecording()">
+                        <i class="bi bi-record-circle"></i> Start Recording
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Save Gesture
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function launchGestureApp() {
+    fetch('/api/launch-app', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Gesture app launched! Check your desktop.');
+                bootstrap.Modal.getInstance(document.getElementById('launchModal')).hide();
+            }
+        })
+        .catch(e => alert('Error: ' + e));
+}
+
+function deleteGesture(gestureId) {
+    if (confirm('Delete this gesture?')) {
+        fetch('/api/gestures/' + gestureId, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(e => alert('Error: ' + e));
+    }
+}
+
+function startGestureRecording() {
+    alert('Recording started! Perform your gesture in front of the webcam.\nPress R in the gesture app to stop recording.');
+}
+
+document.getElementById('recordGestureForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = {
+        gesture_name: document.getElementById('gestureName').value,
+        description: document.getElementById('gestureDesc').value,
+        gesture_data: JSON.stringify({})
+    };
+    
+    fetch('/api/gestures', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Gesture saved successfully!');
+            location.reload();
+        }
+    })
+    .catch(e => alert('Error: ' + e));
+});
+</script>
+{% endblock %}

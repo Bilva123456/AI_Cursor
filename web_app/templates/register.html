@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Gesture Control System{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<script>
+    // Redirect to login page with register form active
+    window.location.href = '{{ url_for("login") }}#register';
+</script>
+
+<p style="text-align: center; margin-top: 50px; color: #666;">
+    Redirecting to sign up page...
+</p>
+{% endblock %}
