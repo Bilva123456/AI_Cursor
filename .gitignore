@@ -1,0 +1,19 @@
+# Virtual environments
+venv/
+venv 2/
+web_app/venv_new/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
